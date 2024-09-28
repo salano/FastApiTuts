@@ -1,4 +1,6 @@
+from datetime import datetime, time, timedelta
 from enum import Enum
+from uuid import UUID
 
 from fastapi import FastAPI, Query, Path, Body
 from pydantic import BaseModel, Field, HttpUrl
@@ -245,7 +247,6 @@ async def create_offer(offer: Offer = Body(..., embed=True)):
 async def create_multiple_images(images: List[Image]):
     return images
 
-'''
 
 
 ## Part 10 - Declare Request Example Data
@@ -297,5 +298,29 @@ async def update_item(
 ):
     results = {"item_id": item_id, "item": item}
     return results
+'''
+
+
+## Part 11 - Extra Data Types
+@app.put("/items/{item_id}")
+async def read_items(
+    item_id: UUID,
+    start_date: Optional[datetime] = Body(None),
+    end_date: Optional[datetime] = Body(None),
+    repeat_at: Optional[time] = Body(None),
+    process_after: Optional[timedelta] = Body(None),
+):
+    start_process = start_date + process_after
+    duration = end_date - start_process
+    return {
+        "item_id": item_id,
+        "start_date": start_date,
+        "end_date": end_date,
+        "repeat_at": repeat_at,
+        "process_after": process_after,
+        "start_process": start_process,
+        "duration": duration,
+    }
+
 
 
