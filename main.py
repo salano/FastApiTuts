@@ -2,7 +2,7 @@ from datetime import datetime, time, timedelta
 from enum import Enum
 from uuid import UUID
 
-from fastapi import FastAPI, Query, Path, Body
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header
 from pydantic import BaseModel, Field, HttpUrl
 from typing import Optional, List
 
@@ -298,7 +298,7 @@ async def update_item(
 ):
     results = {"item_id": item_id, "item": item}
     return results
-'''
+
 
 
 ## Part 11 - Extra Data Types
@@ -321,6 +321,23 @@ async def read_items(
         "start_process": start_process,
         "duration": duration,
     }
+'''
 
+## Part 12 - Cookie and Header Parameters
+@app.get("/items")
+async def read_items(
+    cookie_id: Optional[str] = Cookie(None),
+    accept_encoding: Optional[str] = Header(None),
+    sec_ch_ua: Optional[str] = Header(None),
+    user_agent: Optional[str] = Header(None),
+    x_token: Optional[List[str]] = Header(None),
+):
+    return {
+        "cookie_id": cookie_id,
+        "Accept-Encoding": accept_encoding,
+        "sec-ch-ua": sec_ch_ua,
+        "User-Agent": user_agent,
+        "X-Token values": x_token,
+    }
 
 
