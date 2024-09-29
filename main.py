@@ -2,7 +2,7 @@ from datetime import datetime, time, timedelta
 from enum import Enum
 from uuid import UUID
 
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Form
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
 from typing import Optional, List, Literal, Union
 
@@ -399,7 +399,7 @@ async def read_item_name(item_id: Literal["foo", "bar", "baz"]):
 @app.get("/items/{item_id}/public", response_model=Item, response_model_exclude={"tax"})
 async def read_items_public_data(item_id: Literal["foo", "bar", "baz"]):
     return items[item_id]
-'''
+
 
 
 ## Part 14 - Extra Models
@@ -480,6 +480,18 @@ list_items = [
 @app.get("/list_items/", response_model=List[ListItem])
 async def read_items():
     return items
+'''
 
+## Part 16 - Form Fields
+@app.post("/login/")
+async def login(username: str = Form(...), password: str = Form(...)):
+    print("password", password)
+    return {"username": username}
+
+
+@app.post("/login-json/")
+async def login_json(username: str = Body(...), password: str = Body(...)):
+    print("password", password)
+    return {"username": username}
 
 
