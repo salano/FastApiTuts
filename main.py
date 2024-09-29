@@ -782,7 +782,8 @@ async def read_items(commons: dict = Depends(common_parameters)):
 @app.get("/users/")
 async def read_users(commons: dict = Depends(common_parameters)):
     return commons
-'''
+
+
 ## Part 23 - Classes as Dependencies
 fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
@@ -802,3 +803,22 @@ async def read_items(commons: CommonQueryParams = Depends()):
     items = fake_items_db[commons.skip : commons.skip + commons.limit]
     response.update({"items": items})
     return response
+'''
+
+
+## Part 24 - Sub-Dependencies
+def query_extractor(q: Optional[str] = None):
+    return q
+
+
+def query_or_body_extractor(
+    q: str = Depends(query_extractor), last_query: Optional[str] = Body(None)
+):
+    if q:
+        return q
+    return last_query
+
+
+@app.post("/item")
+async def try_query(query_or_body: str = Depends(query_or_body_extractor)):
+    return {"q_or_body": query_or_body}
