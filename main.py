@@ -14,7 +14,8 @@ from fastapi import (
     UploadFile, 
     HTTPException,
     Request,
-    status
+    status,
+    Depends
 
 )
 from fastapi.encoders import jsonable_encoder
@@ -708,7 +709,6 @@ async def read_users():
 @app.get("/elements/", tags=[Tags.items], deprecated=True)
 async def read_elements():
     return [{"item_id": "Foo"}]
-'''
 
 
 ## Part 21a - JSON Compatible Encoder
@@ -761,3 +761,23 @@ def patch_item(item_id: str, item: Item):
     updated_item = stored_item_model.copy(update=update_data)
     items[item_id] = jsonable_encoder(updated_item)
     return updated_item
+'''
+## Part 22 - Dependencies Intro
+async def hello():
+    return "world"
+
+
+async def common_parameters(
+    q: Optional[str] = None, skip: int = 0, limit: int = 100, something: str = Depends(hello)
+):
+    return {"q": q, "skip": skip, "limit": limit, "hello": something}
+
+
+@app.get("/items/")
+async def read_items(commons: dict = Depends(common_parameters)):
+    return commons
+
+
+@app.get("/users/")
+async def read_users(commons: dict = Depends(common_parameters)):
+    return commons
