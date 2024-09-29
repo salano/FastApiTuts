@@ -803,7 +803,6 @@ async def read_items(commons: CommonQueryParams = Depends()):
     items = fake_items_db[commons.skip : commons.skip + commons.limit]
     response.update({"items": items})
     return response
-'''
 
 
 ## Part 24 - Sub-Dependencies
@@ -822,3 +821,29 @@ def query_or_body_extractor(
 @app.post("/item")
 async def try_query(query_or_body: str = Depends(query_or_body_extractor)):
     return {"q_or_body": query_or_body}
+'''
+
+
+## Part 25 - Dependencies in path operation decorators
+async def verify_token(x_token: str = Header(...)):
+    if x_token != "fake-super-secret-token":
+        raise HTTPException(status_code=400, detail="X-Token header invalid")
+
+
+async def verify_key(x_key: str = Header(...)):
+    if x_key != "fake-super-secret-key":
+        raise HTTPException(status_code=400, detail="X-Key header invalid")
+    return x_key
+
+
+# app = FastAPI(dependencies=[Depends(verify_token), Depends(verify_key)])
+
+
+@app.get("/items/", dependencies=[Depends(verify_token), Depends(verify_key)])
+async def read_items():
+    return [{"item": "Foo"}, {"item": "Bar"}]
+
+
+@app.get("/users/", dependencies=[Depends(verify_token), Depends(verify_key)])
+async def read_users():
+    return [{"username": "Rick"}, {"username": "Morty"}]
