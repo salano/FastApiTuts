@@ -4,6 +4,8 @@ from uuid import UUID
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from jose import jwt, JWTError
+from starlette.middleware.base import BaseHTTPMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 from fastapi import (
     FastAPI, 
@@ -935,7 +937,6 @@ async def get_me(current_user: User = Depends(get_current_active_user)):
 @app.get("/items/")
 async def read_items(token: str = Depends(oauth2_scheme)):
     return {"token": token}
-'''
 
 
 ## Part 27 - Security, OAuth2 Bearer and JWT
@@ -1064,3 +1065,23 @@ async def read_users_me(current_user: User = Depends(get_current_active_user)):
 @app.get("/users/me/items")
 async def read_own_items(current_user: User = Depends(get_current_active_user)):
     return [{"item_id": "Foo", "owner": current_user.username}]
+'''
+
+
+## Part 28 - Middleware and CORS
+class MyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.time()
+        response = await call_next(request)
+        process_time = time.time() - start_time
+        response.headers["X-Process-Time"] = str(process_time)
+        return response
+
+
+origins = ["http://localhost:8000", "http://localhost:3000"]
+app.add_middleware(MyMiddleware)
+app.add_middleware(CORSMiddleware, allow_origins=origins)
+
+@app.get("/test")
+async def test():
+    return {"hello": "world"}
