@@ -2,9 +2,10 @@ from datetime import datetime, time, timedelta
 from enum import Enum
 from uuid import UUID
 
-from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Form
+from fastapi import FastAPI, Query, Path, Body, Cookie, Header, Form, File, UploadFile
 from pydantic import BaseModel, Field, HttpUrl, EmailStr
 from typing import Optional, List, Literal, Union
+from starlette.responses import HTMLResponse
 
 app = FastAPI()
 
@@ -480,7 +481,7 @@ list_items = [
 @app.get("/list_items/", response_model=List[ListItem])
 async def read_items():
     return items
-'''
+
 
 ## Part 16 - Form Fields
 @app.post("/login/")
@@ -493,5 +494,37 @@ async def login(username: str = Form(...), password: str = Form(...)):
 async def login_json(username: str = Body(...), password: str = Body(...)):
     print("password", password)
     return {"username": username}
+'''
 
+
+## Part 17 - Request Files
+@app.post("/files/")
+async def create_file(
+    files: List[bytes] = File(..., description="A file read as bytes")
+):
+    return {"file_sizes": [len(file) for file in files]}
+
+
+@app.post("/uploadfile/")
+async def create_upload_file(
+    files: List[UploadFile] = File(..., description="A file read as UploadFile")
+):
+    return {"filename": [file.filename for file in files]}
+
+
+@app.get("/")
+async def main():
+    content = """
+            <body>
+            <form action="/files/" enctype="multipart/form-data" method="post">
+            <input name="files" type="file" multiple>
+            <input type="submit">
+            </form>
+            <form action="/uploadfiles/" enctype="multipart/form-data" method="post">
+            <input name="files" type="file" multiple>
+            <input type="submit">
+            </form>
+            </body>
+    """
+    return HTMLResponse(content=content)
 
