@@ -3,3 +3,5 @@ uvicorn[standard]
 pydantic
 pydantic[email]
 python-multipart
+python-jose[cryptography]
+passlib[bcrypt]
