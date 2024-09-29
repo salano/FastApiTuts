@@ -494,7 +494,7 @@ async def login(username: str = Form(...), password: str = Form(...)):
 async def login_json(username: str = Body(...), password: str = Body(...)):
     print("password", password)
     return {"username": username}
-'''
+
 
 
 ## Part 17 - Request Files
@@ -528,3 +528,20 @@ async def main():
     """
     return HTMLResponse(content=content)
 
+'''
+
+
+## Part 18 - Request Forms and Files
+@app.post("/files/")
+async def create_file(
+    file: bytes = File(...),
+    fileb: UploadFile = File(...),
+    token: str = Form(...),
+    hello: str = Body(...),
+):
+    return {
+        "file_size": len(file),
+        "token": token,
+        "fileb_content_type": fileb.content_type,
+        "hello": hello,
+    }
